@@ -1,0 +1,41 @@
+# .gitignore para conecta4 (maven project)
+# Ignora artefactos de compilación, IDEs y ficheros temporales
+
+# Maven
+/target/
+
+# Eclipse
+/.classpath
+/.project
+/.settings/
+
+# IntelliJ
+/.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Java
+*.class
+*.log
+test/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs y temporales
+*.tmp
+tmp/
+*.bak
+*~
+
+# Local environment / secrets
+.env
+local.properties
+
+# IDE specific metadata
+*.swp
+
+# End of file
