@@ -1,21 +1,25 @@
 package com.cascon77.conecta4.view;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
-import javax.swing.JButton;
+
+import com.cascon77.conecta4.model.Team;
 
 public class Table extends JFrame {
 
@@ -23,20 +27,7 @@ public class Table extends JFrame {
 	private JPanel contentPane;
 
 	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Table frame = new Table();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-	
-	
+
 	private GridBagLayout gblContentPane;
 	private JPanel panelTopLeft;
 	private GridBagConstraints gbcPanelTopLeft;
@@ -53,26 +44,41 @@ public class Table extends JFrame {
 	private GridBagConstraints gbc_panelPrincipal;
 	private int pointsRed;
 	private int pointsYellow;
-	
+
 	private Font font;
 	private JLabel lblTurn;
 	private JPanel panelBoard;
-	private MyButton btnNewButton;
-	private MyButton[][] boardButtons; // matriz 6x7 para los botones del tablero
-	
+	private MyButton[][] boardButtons;
+	private Team teamTurn;
+	private JMenuBar menuBar;
+	private JButton btnNewButton;
+
 	public Table() {
+		teamTurn = Team.RED;
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 792, 593);
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		btnNewButton = new JButton("New button");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				resetBoard(true);
+			}
+		});
+		menuBar.add(btnNewButton);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		gblContentPane = new GridBagLayout();
-		gblContentPane.columnWidths = new int[]{0, 0, 0, 0};
-		gblContentPane.rowHeights = new int[]{0, 0, 0};
-		gblContentPane.columnWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gblContentPane.rowWeights = new double[]{1.0, 9.0, Double.MIN_VALUE};
+		gblContentPane.columnWidths = new int[] { 0, 0, 0, 0 };
+		gblContentPane.rowHeights = new int[] { 0, 0, 0 };
+		gblContentPane.columnWeights = new double[] { 1.0, 1.0, 1.0, Double.MIN_VALUE };
+		gblContentPane.rowWeights = new double[] { 1.0, 9.0, Double.MIN_VALUE };
 		contentPane.setLayout(gblContentPane);
-		
+
 		panelTopLeft = new JPanel();
 		gbcPanelTopLeft = new GridBagConstraints();
 		gbcPanelTopLeft.insets = new Insets(0, 0, 5, 5);
@@ -81,20 +87,20 @@ public class Table extends JFrame {
 		gbcPanelTopLeft.gridy = 0;
 		contentPane.add(panelTopLeft, gbcPanelTopLeft);
 		panelTopLeft.setLayout(new BorderLayout(0, 0));
-		
+
 		font = new Font("Consolas", Font.BOLD, 20);
-		
+
 		lblRed = new JLabel("Rojo:");
 		lblRed.setHorizontalAlignment(SwingConstants.CENTER);
 		lblRed.setFont(font);
 		panelTopLeft.add(lblRed, BorderLayout.NORTH);
-		
+
 		pointsRed = 0;
 		lblRedCount = new JLabel(Integer.toString(pointsRed));
 		lblRedCount.setFont(font);
 		lblRedCount.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTopLeft.add(lblRedCount, BorderLayout.CENTER);
-		
+
 		panelTopCenter = new JPanel();
 		gbcPanelTopCenter = new GridBagConstraints();
 		gbcPanelTopCenter.insets = new Insets(0, 0, 5, 5);
@@ -103,17 +109,17 @@ public class Table extends JFrame {
 		gbcPanelTopCenter.gridy = 0;
 		contentPane.add(panelTopCenter, gbcPanelTopCenter);
 		panelTopCenter.setLayout(new BorderLayout(0, 0));
-		
+
 		lblTeam = new JLabel("Rojas");
 		lblTeam.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTeam.setFont(font);
 		panelTopCenter.add(lblTeam);
-		
+
 		lblTurn = new JLabel("Turno de");
 		lblTurn.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTurn.setFont(new Font("Consolas", Font.BOLD, 20));
 		panelTopCenter.add(lblTurn, BorderLayout.NORTH);
-		
+
 		panelTopRight = new JPanel();
 		gbcPanelTopRight = new GridBagConstraints();
 		gbcPanelTopRight.insets = new Insets(0, 0, 5, 0);
@@ -122,18 +128,18 @@ public class Table extends JFrame {
 		gbcPanelTopRight.gridy = 0;
 		contentPane.add(panelTopRight, gbcPanelTopRight);
 		panelTopRight.setLayout(new BorderLayout(0, 0));
-		
+
 		lblYellow = new JLabel("Amarillo:");
 		lblYellow.setHorizontalAlignment(SwingConstants.CENTER);
 		lblYellow.setFont(font);
 		panelTopRight.add(lblYellow, BorderLayout.NORTH);
-		
-		pointsYellow = 0;		
+
+		pointsYellow = 0;
 		lblYellowCount = new JLabel(Integer.toString(pointsYellow));
 		lblYellowCount.setFont(font);
 		lblYellowCount.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTopRight.add(lblYellowCount, BorderLayout.CENTER);
-		
+
 		panelPrincipal = new JPanel();
 		gbc_panelPrincipal = new GridBagConstraints();
 		gbc_panelPrincipal.gridwidth = 3;
@@ -141,35 +147,94 @@ public class Table extends JFrame {
 		gbc_panelPrincipal.gridx = 0;
 		gbc_panelPrincipal.gridy = 1;
 		contentPane.add(panelPrincipal, gbc_panelPrincipal);
-		GridBagLayout gbl_panelPrincipal = new GridBagLayout();
-		gbl_panelPrincipal.columnWidths = new int[]{0, 0};
-		gbl_panelPrincipal.rowHeights = new int[]{0, 0};
-		gbl_panelPrincipal.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panelPrincipal.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		panelPrincipal.setLayout(gbl_panelPrincipal);
-		
+		GridBagLayout gblPanelPrincipal = new GridBagLayout();
+		gblPanelPrincipal.columnWidths = new int[] { 0, 0 };
+		gblPanelPrincipal.rowHeights = new int[] { 0, 0 };
+		gblPanelPrincipal.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gblPanelPrincipal.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
+		panelPrincipal.setLayout(gblPanelPrincipal);
+
 		panelBoard = new JPanel();
 		panelBoard.setBorder(new LineBorder(new Color(0, 0, 0)));
-		GridBagConstraints gbc_panelBoard = new GridBagConstraints();
-		gbc_panelBoard.insets = new Insets(5, 10, 5, 10);
-		gbc_panelBoard.fill = GridBagConstraints.BOTH;
-		gbc_panelBoard.gridx = 0;
-		gbc_panelBoard.gridy = 0;
-		gbc_panelBoard.weightx = 1.0;
-		gbc_panelBoard.weighty = 1.0;
-		panelPrincipal.add(panelBoard, gbc_panelBoard);
+		GridBagConstraints gbcPanelBoard = new GridBagConstraints();
+		gbcPanelBoard.insets = new Insets(5, 10, 5, 10);
+		gbcPanelBoard.fill = GridBagConstraints.BOTH;
+		gbcPanelBoard.gridx = 0;
+		gbcPanelBoard.gridy = 0;
+		gbcPanelBoard.weightx = 1.0;
+		gbcPanelBoard.weighty = 1.0;
+		panelPrincipal.add(panelBoard, gbcPanelBoard);
 		panelBoard.setBackground(new Color(0, 0, 255));
 		panelBoard.setLayout(new GridLayout(6, 7, 5, 5));
-		
+
 		boardButtons = new MyButton[6][7];
 		for (int row = 0; row < 6; row++) {
 			for (int col = 0; col < 7; col++) {
 				MyButton btn = new MyButton();
-				btn.setActionCommand(row + "," + col);
+				btn.addActionListener(e -> setColor(e));
+				btn.setBackground(Color.WHITE);
+				btn.setActionCommand(Integer.toString(col));
 				boardButtons[row][col] = btn;
 				panelBoard.add(btn);
 			}
 		}
 	}
-	
+
+	public void setColor(ActionEvent e) {
+		String command = e.getActionCommand();
+		int col = Integer.parseInt(command);
+
+		for (int r = 5; r >= 0; r--) {
+			if (boardButtons[r][col].getBackground() == Color.WHITE) {
+				if (teamTurn == Team.RED) {
+					boardButtons[r][col].setBackground(Color.RED);
+					teamTurn = Team.YELLOW;
+					lblTeam.setText("Amarillas");
+				} else {
+					boardButtons[r][col].setBackground(Color.YELLOW);
+					teamTurn = Team.RED;
+					lblTeam.setText("Rojas");
+				}
+				break;
+			}
+		}
+	}
+
+	public void updateCell(int row, int col, Team team) {
+		if (row < 0 || row >= boardButtons.length || col < 0 || col >= boardButtons[0].length)
+			return;
+		if (team == Team.RED)
+			boardButtons[row][col].setBackground(Color.RED);
+		else if (team == Team.YELLOW)
+			boardButtons[row][col].setBackground(Color.YELLOW);
+		else
+			boardButtons[row][col].setBackground(Color.WHITE);
+	}
+
+	public void resetBoard(boolean fullRestart) {
+		for (int r = 0; r < boardButtons.length; r++) {
+			for (int c = 0; c < boardButtons[r].length; c++) {
+				boardButtons[r][c].setBackground(Color.WHITE);
+			}
+		}
+		if (fullRestart) {
+			redPointsReset();
+			yellowPointsReset();
+			teamTurn = Team.RED;
+		} else {
+			teamTurn = (teamTurn == Team.RED) ? Team.YELLOW : Team.RED;
+		}
+		lblTeam.setText(teamTurn == Team.RED ? "Rojas" : "Amarillas");
+	}
+
+	private void yellowPointsReset() {
+		pointsYellow = 0;
+		lblYellowCount.setText(Integer.toString(pointsYellow));
+	}
+
+	private void redPointsReset() {
+		pointsRed = 0;
+		lblRedCount.setText(Integer.toString(pointsRed));
+	}
+
 }
