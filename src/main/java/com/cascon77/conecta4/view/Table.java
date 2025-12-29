@@ -2,6 +2,7 @@ package com.cascon77.conecta4.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -51,24 +53,24 @@ public class Table extends JFrame {
 	private MyButton[][] boardButtons;
 	private Team teamTurn;
 	private JMenuBar menuBar;
-	private JButton btnNewButton;
+	private JButton btnReset;
 
 	public Table() {
 		teamTurn = Team.RED;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 792, 593);
-		
+		setModalExclusionType(ModalExclusionType.NO_EXCLUDE);
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
-		btnNewButton = new JButton("New button");
-		btnNewButton.addActionListener(new ActionListener() {
+		btnReset = new JButton("Full reset");
+		btnReset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				resetBoard(true);
 			}
 		});
-		menuBar.add(btnNewButton);
+		menuBar.add(btnReset);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -180,25 +182,69 @@ public class Table extends JFrame {
 		}
 	}
 
-	public void setColor(ActionEvent e) {
-		String command = e.getActionCommand();
-		int col = Integer.parseInt(command);
+	private boolean checkWin(int row, int col, Color color) {
+        int count = 0;
+        for (int c = 0; c < 7; c++) {
+            count = (boardButtons[row][c].getBackground() == color) ? count + 1 : 0;
+            if (count == 4) return true;
+        }
 
-		for (int r = 5; r >= 0; r--) {
-			if (boardButtons[r][col].getBackground() == Color.WHITE) {
-				if (teamTurn == Team.RED) {
-					boardButtons[r][col].setBackground(Color.RED);
-					teamTurn = Team.YELLOW;
-					lblTeam.setText("Amarillas");
-				} else {
-					boardButtons[r][col].setBackground(Color.YELLOW);
-					teamTurn = Team.RED;
-					lblTeam.setText("Rojas");
-				}
-				break;
-			}
-		}
-	}
+        count = 0;
+        for (int r = 0; r < 6; r++) {
+            count = (boardButtons[r][col].getBackground() == color) ? count + 1 : 0;
+            if (count == 4) return true;
+        }
+
+        count = 0;
+        for (int r = 0, c = col - row; r < 6; r++, c++) {
+            if (c >= 0 && c < 7) {
+                count = (boardButtons[r][c].getBackground() == color) ? count + 1 : 0;
+                if (count == 4) return true;
+            }
+        }
+
+        count = 0;
+        for (int r = 0, c = col + row; r < 6; r++, c--) {
+            if (c >= 0 && c < 7) {
+                count = (boardButtons[r][c].getBackground() == color) ? count + 1 : 0;
+                if (count == 4) return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void setColor(ActionEvent e) {
+        String command = e.getActionCommand();
+        int col = Integer.parseInt(command);
+
+        for (int r = 5; r >= 0; r--) {
+            if (boardButtons[r][col].getBackground() == Color.WHITE) {
+                Color currentColor = (teamTurn == Team.RED) ? Color.RED : Color.YELLOW;
+                boardButtons[r][col].setBackground(currentColor);
+
+                if (checkWin(r, col, currentColor)) {
+                    lblTeam.setText((teamTurn == Team.RED ? "Rojas" : "Amarillas") + " ganan!");
+                    if (teamTurn == Team.RED) {
+						pointsRed++;
+						lblRedCount.setText(Integer.toString(pointsRed));
+					} else {
+						pointsYellow++;
+						lblYellowCount.setText(Integer.toString(pointsYellow));
+					}
+                    JOptionPane.showMessageDialog(this, (teamTurn == Team.RED ? "Rojas" : "Amarillas") + " ganan!");
+                    resetBoard(false);
+                    return;
+                }
+
+                teamTurn = (teamTurn == Team.RED) ? Team.YELLOW : Team.RED;
+                lblTeam.setText(teamTurn == Team.RED ? "Rojas" : "Amarillas");
+                break;
+            }
+        }
+    }
+
+    
 
 	public void updateCell(int row, int col, Team team) {
 		if (row < 0 || row >= boardButtons.length || col < 0 || col >= boardButtons[0].length)
@@ -236,5 +282,6 @@ public class Table extends JFrame {
 		pointsRed = 0;
 		lblRedCount.setText(Integer.toString(pointsRed));
 	}
-
+	
+	
 }
