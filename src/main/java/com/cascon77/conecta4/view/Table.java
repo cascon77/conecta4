@@ -6,12 +6,16 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.GridLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import javax.swing.JButton;
 
 public class Table extends JFrame {
 
@@ -39,18 +43,22 @@ public class Table extends JFrame {
 	private JLabel lblRed;
 	private JLabel lblRedCount;
 	private JPanel panelTopCenter;
-	private JLabel lblTurn;
+	private JLabel lblTeam;
 	private JPanel panelTopRight;
 	private GridBagConstraints gbcPanelTopCenter;
 	private GridBagConstraints gbcPanelTopRight;
 	private JLabel lblYellow;
 	private JLabel lblYellowCount;
-	private JPanel panelBoard;
-	private GridBagConstraints gbcPanelBoard;
+	private JPanel panelPrincipal;
+	private GridBagConstraints gbc_panelPrincipal;
 	private int pointsRed;
 	private int pointsYellow;
 	
 	private Font font;
+	private JLabel lblTurn;
+	private JPanel panelBoard;
+	private MyButton btnNewButton;
+	private MyButton[][] boardButtons; // matriz 6x7 para los botones del tablero
 	
 	public Table() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,10 +102,17 @@ public class Table extends JFrame {
 		gbcPanelTopCenter.gridx = 1;
 		gbcPanelTopCenter.gridy = 0;
 		contentPane.add(panelTopCenter, gbcPanelTopCenter);
+		panelTopCenter.setLayout(new BorderLayout(0, 0));
 		
-		lblTurn = new JLabel("Empieza");
-		lblTurn.setFont(font);
-		panelTopCenter.add(lblTurn);
+		lblTeam = new JLabel("Rojas");
+		lblTeam.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTeam.setFont(font);
+		panelTopCenter.add(lblTeam);
+		
+		lblTurn = new JLabel("Turno de");
+		lblTurn.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTurn.setFont(new Font("Consolas", Font.BOLD, 20));
+		panelTopCenter.add(lblTurn, BorderLayout.NORTH);
 		
 		panelTopRight = new JPanel();
 		gbcPanelTopRight = new GridBagConstraints();
@@ -119,13 +134,42 @@ public class Table extends JFrame {
 		lblYellowCount.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTopRight.add(lblYellowCount, BorderLayout.CENTER);
 		
+		panelPrincipal = new JPanel();
+		gbc_panelPrincipal = new GridBagConstraints();
+		gbc_panelPrincipal.gridwidth = 3;
+		gbc_panelPrincipal.fill = GridBagConstraints.BOTH;
+		gbc_panelPrincipal.gridx = 0;
+		gbc_panelPrincipal.gridy = 1;
+		contentPane.add(panelPrincipal, gbc_panelPrincipal);
+		GridBagLayout gbl_panelPrincipal = new GridBagLayout();
+		gbl_panelPrincipal.columnWidths = new int[]{0, 0};
+		gbl_panelPrincipal.rowHeights = new int[]{0, 0};
+		gbl_panelPrincipal.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panelPrincipal.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		panelPrincipal.setLayout(gbl_panelPrincipal);
+		
 		panelBoard = new JPanel();
-		gbcPanelBoard = new GridBagConstraints();
-		gbcPanelBoard.gridwidth = 3;
-		gbcPanelBoard.fill = GridBagConstraints.BOTH;
-		gbcPanelBoard.gridx = 0;
-		gbcPanelBoard.gridy = 1;
-		contentPane.add(panelBoard, gbcPanelBoard);
+		panelBoard.setBorder(new LineBorder(new Color(0, 0, 0)));
+		GridBagConstraints gbc_panelBoard = new GridBagConstraints();
+		gbc_panelBoard.insets = new Insets(5, 10, 5, 10);
+		gbc_panelBoard.fill = GridBagConstraints.BOTH;
+		gbc_panelBoard.gridx = 0;
+		gbc_panelBoard.gridy = 0;
+		gbc_panelBoard.weightx = 1.0;
+		gbc_panelBoard.weighty = 1.0;
+		panelPrincipal.add(panelBoard, gbc_panelBoard);
+		panelBoard.setBackground(new Color(0, 0, 255));
+		panelBoard.setLayout(new GridLayout(6, 7, 5, 5));
+		
+		boardButtons = new MyButton[6][7];
+		for (int row = 0; row < 6; row++) {
+			for (int col = 0; col < 7; col++) {
+				MyButton btn = new MyButton();
+				btn.setActionCommand(row + "," + col);
+				boardButtons[row][col] = btn;
+				panelBoard.add(btn);
+			}
+		}
 	}
 	
 }
