@@ -1,7 +1,5 @@
 # Conecta 4
 
----
-
 Reto 1 creado por [mouredev](https://retosdeprogramacion.com/proyectos/)
 
 ---
